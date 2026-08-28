@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1100" viewBox="0 0 800 1100">
+  <rect width="800" height="1100" fill="#fffdf8"/>
+  <rect x="36" y="36" width="728" height="1028" fill="none" stroke="#e6dccb" stroke-width="2" rx="8"/>
+  <text x="400" y="84" text-anchor="middle" font-size="22" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">Delhi Public School, Bokaro Steel City</text>
+  <text x="400" y="114" text-anchor="middle" font-size="18" fill="#e85d3a" font-family="Georgia, serif">Class 10 Biology · Unit Test</text>
+  <text x="64" y="148" font-size="13" fill="#6b6458" font-family="Georgia, serif">Time: 1 hour</text>
+  <text x="736" y="148" text-anchor="end" font-size="13" fill="#6b6458" font-family="Georgia, serif">Max. marks: 40 · Page 2 of 2</text>
+  <line x1="64" y1="158" x2="736" y2="158" stroke="#eadfce"/>
+  
+        <text x="64" y="170" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">7.</text>
+        <text x="118" y="198" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Draw and label a nephron (Bowman's capsule, glomerulus, proximal tubule, loop of Henle,</text>
+<text x="118" y="220" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">distal tubule, collecting duct).</text>
+        <text x="736" y="170" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[4]</text>
+      
+
+        <text x="64" y="310" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">8.</text>
+        <text x="118" y="338" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Explain the structural differences between palisade mesophyll and spongy mesophyll and</text>
+<text x="118" y="360" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">state how each structure aids its function in the leaf.</text>
+        <text x="736" y="310" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[3]</text>
+      
+
+        <text x="64" y="450" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">9.</text>
+        <text x="118" y="478" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Describe the process of transpiration in plants in two to three sentences and name two</text>
+<text x="118" y="500" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">environmental factors that increase its rate.</text>
+        <text x="736" y="450" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[2]</text>
+      
+
+        <text x="64" y="590" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">10.</text>
+        <text x="118" y="618" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Explain how the structure of xylem vessels facilitates water transport in plants</text>
+<text x="118" y="640" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">(mention one adaptation and explain its role).</text>
+        <text x="736" y="590" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[2]</text>
+      
+
+        <text x="64" y="730" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">11(a).</text>
+        <text x="118" y="758" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">A diagram shows two potted plants — Plant A in bright light with high water needs, Plant</text>
+<text x="118" y="780" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">B kept in dim light with pale, elongated leaves.</text>
+        <text x="736" y="730" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[2]</text>
+      
+
+        <text x="64" y="870" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">11(b).</text>
+        <text x="118" y="898" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Suggest one practical measure to help Plant B recover.</text>
+        <text x="736" y="870" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[1]</text>
+      
+
+        <text x="64" y="1010" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">12.</text>
+        <text x="118" y="1038" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">A resting person has tidal volume (air per breath) of 0.5L and breathes 12 times per</text>
+<text x="118" y="1060" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">minute.</text>
+        <text x="736" y="1010" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[2]</text>
+      
+  <text x="400" y="1052" text-anchor="middle" font-size="12" fill="#8a7a66" font-family="Georgia, serif">End of question paper. Q13: If dead space is 0.15L per breath, calculate alveolar ventilation per minute.</text>
+</svg>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1100" viewBox="0 0 800 1100">
+  <rect width="800" height="1100" fill="#fffdf8"/>
+  <rect x="36" y="36" width="728" height="1028" fill="none" stroke="#e6dccb" stroke-width="2" rx="8"/>
+  <text x="400" y="84" text-anchor="middle" font-size="22" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">Delhi Public School, Bokaro Steel City</text>
+  <text x="400" y="114" text-anchor="middle" font-size="18" fill="#e85d3a" font-family="Georgia, serif">Class 10 Biology · Unit Test</text>
+  <text x="64" y="148" font-size="13" fill="#6b6458" font-family="Georgia, serif">Time: 1 hour</text>
+  <text x="736" y="148" text-anchor="end" font-size="13" fill="#6b6458" font-family="Georgia, serif">Max. marks: 40 · Page 1 of 2</text>
+  <line x1="64" y1="158" x2="736" y2="158" stroke="#eadfce"/>
+  
+        <text x="64" y="170" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">1.</text>
+        <text x="118" y="198" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Which blood vessel carries blood away from the heart?</text>
+        <text x="736" y="170" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[2]</text>
+      
+
+        <text x="64" y="310" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">2.</text>
+        <text x="118" y="338" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Which of the following organelles is primarily involved in photosynthesis?</text>
+        <text x="736" y="310" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[2]</text>
+      
+
+        <text x="64" y="450" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">3.</text>
+        <text x="118" y="478" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Explain the role of chloroplasts in photosynthesis, naming the main pigments involved</text>
+<text x="118" y="500" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">and briefly outlining the two major stages of the process.</text>
+        <text x="736" y="450" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[5]</text>
+      
+
+        <text x="64" y="590" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">4.</text>
+        <text x="118" y="618" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Describe the flow of blood through the human heart starting from the right atrium and</text>
+<text x="118" y="640" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">ending at the aorta, include the names of the valves crossed.</text>
+        <text x="736" y="590" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[5]</text>
+      
+
+        <text x="64" y="730" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">5.</text>
+        <text x="118" y="758" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Draw a labelled diagram of an alveolus showing capillaries and air space (label all</text>
+<text x="118" y="780" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">exchange).</text>
+        <text x="736" y="730" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[3]</text>
+      
+
+        <text x="64" y="870" font-size="18" font-weight="700" fill="#2c2c2c" font-family="Georgia, serif">6.</text>
+        <text x="118" y="898" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">Draw a neat labelled diagram of the human digestive system (stomach, small intestine,</text>
+<text x="118" y="920" font-size="16" fill="#2c2c2c" font-family="Georgia, serif">large intestine, liver, pancreas) and label the site where most absorption occurs.</text>
+        <text x="736" y="870" text-anchor="end" font-size="13" fill="#8a7a66" font-family="Georgia, serif">[5]</text>
+      
+  <text x="400" y="1052" text-anchor="middle" font-size="12" fill="#8a7a66" font-family="Georgia, serif">Turn over</text>
+</svg>
