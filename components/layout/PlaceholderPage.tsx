@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 
 export default function PlaceholderPage({
@@ -18,6 +19,12 @@ export default function PlaceholderPage({
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-ink">{title}</h1>
           <p className="mt-2 text-muted-foreground">{body}</p>
+          <Link
+            href="/exams"
+            className="mt-6 inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-semibold text-white"
+          >
+            Open Exams
+          </Link>
         </div>
       </section>
     </AppShell>
