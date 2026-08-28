@@ -34,7 +34,7 @@ export function Sidebar() {
     <aside
       className={cn(
         "flex h-full flex-col rounded-[24px] border border-white/80 bg-white p-4 shadow-[0_10px_40px_rgba(40,30,20,0.04)]",
-        collapsed ? "w-[88px]" : "w-[272px]",
+        collapsed ? "w-22" : "w-68",
       )}
     >
       <div className={cn("mb-5 flex items-center", collapsed ? "justify-center" : "justify-between")}>
@@ -57,9 +57,11 @@ export function Sidebar() {
         </button>
       </div>
 
-      <div
+      <Link
+        href="/exams"
+        onClick={() => closeMobile(false)}
         className={cn(
-          "mb-6 flex items-center gap-2 rounded-full border border-coral/40 bg-ink px-3 py-2 text-white shadow-sm",
+          "mb-6 flex items-center gap-2 rounded-full border border-coral/40 bg-ink px-3 py-2 text-white shadow-sm hover:bg-ink/90",
           collapsed && "justify-center px-2",
         )}
       >
@@ -67,7 +69,7 @@ export function Sidebar() {
         {!collapsed && (
           <span className="text-[13px] font-medium tracking-tight">AI Teacher&apos;s Toolkit</span>
         )}
-      </div>
+      </Link>
 
       <nav className="flex flex-1 flex-col gap-1" aria-label="Main">
         {NAV.map((item) => {
@@ -82,12 +84,12 @@ export function Sidebar() {
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors",
                 collapsed && "justify-center px-2",
                 active
-                  ? "bg-[#f3f2ee] text-ink"
+                  ? "bg-page text-ink"
                   : "hover:bg-muted/80 hover:text-ink",
               )}
               aria-current={active ? "page" : undefined}
             >
-              <Icon className="size-[18px]" />
+              <Icon className="size-4.5" />
               {!collapsed && item.label}
             </Link>
           );
@@ -102,13 +104,15 @@ export function Sidebar() {
           collapsed && "justify-center px-2",
         )}
       >
-        <Settings className="size-[18px]" />
+        <Settings className="size-4.5" />
         {!collapsed && "Settings"}
       </Link>
 
-      <div
+      <Link
+        href="/settings"
+        onClick={() => closeMobile(false)}
         className={cn(
-          "flex items-center gap-3 rounded-2xl border border-border bg-[#faf8f4] p-3",
+          "flex items-center gap-3 rounded-2xl border border-border bg-[#faf8f4] p-3 hover:bg-[#f3efe8]",
           collapsed && "justify-center p-2",
         )}
       >
@@ -116,10 +120,10 @@ export function Sidebar() {
         {!collapsed && (
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-ink">Delhi Public School</p>
-            <p className="truncate text-xs text-muted-foreground">Bokaro Steel City</p>
+            <p className="truncate text-xs text-muted-foreground">Haridwar Uttarakhand</p>
           </div>
         )}
-      </div>
+      </Link>
     </aside>
   );
 }
