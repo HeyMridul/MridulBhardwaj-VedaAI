@@ -2,15 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Bell,
-  ChevronDown,
-  CircleHelp,
-  Folder,
-  Sparkles,
-} from "lucide-react";
+import { Bell, CircleHelp, Folder, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { HeaderIconLink, UserChip } from "@/components/layout/HeaderActions";
+import { unreadCount, useAppStore } from "@/lib/app-store";
 
 const TITLES: Record<string, string> = {
   "/exams": "Exams",
@@ -21,16 +16,20 @@ const TITLES: Record<string, string> = {
   "/assignments": "Assignments",
   "/library": "My Library",
   "/settings": "Settings",
+  "/help": "Help",
+  "/notifications": "Notifications",
 };
 
 export function TopHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const notifications = useAppStore((state) => state.notifications);
   const title = TITLES[pathname] ?? "Exams";
+  const sectionHref = pathname.startsWith("/exams") ? "/exams" : (pathname || "/exams");
   const canGoBack = pathname !== "/exams" && pathname !== "/home";
 
   return (
-    <header className="flex h-[64px] items-center justify-between rounded-2xl border border-white bg-white px-4 shadow-[0_6px_24px_rgba(40,30,20,0.04)]">
+    <header className="flex h-16 items-center justify-between rounded-2xl border border-white bg-white px-4 shadow-[0_6px_24px_rgba(40,30,20,0.04)]">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
@@ -49,56 +48,31 @@ export function TopHeader() {
             />
           </svg>
         </Button>
-        <Folder className="size-4 text-muted-foreground" />
-        <span className="text-[15px] font-medium text-ink">{title}</span>
+        <Link
+          href={sectionHref}
+          className="flex items-center gap-2 rounded-lg px-1 py-1 hover:bg-muted"
+        >
+          <Folder className="size-4 text-muted-foreground" />
+          <span className="text-[15px] font-medium text-ink">{title}</span>
+        </Link>
       </div>
 
       <div className="flex items-center gap-1.5">
-        <IconButton label="Help">
+        <HeaderIconLink href="/help" label="Help">
           <CircleHelp className="size-4" />
-        </IconButton>
-        <IconButton label="Notifications" dot>
-          <Bell className="size-4" />
-        </IconButton>
-        <IconButton label="AI tools">
-          <Sparkles className="size-4 text-coral" />
-        </IconButton>
-        <Link
-          href="/settings"
-          className="ml-1 flex items-center gap-2 rounded-full py-1 pr-2 pl-1 hover:bg-muted"
+        </HeaderIconLink>
+        <HeaderIconLink
+          href="/notifications"
+          label="Notifications"
+          dot={unreadCount(notifications) > 0}
         >
-          <span className="flex size-8 items-center justify-center rounded-full bg-[#d8c3a5] text-xs font-semibold text-ink">
-            MR
-          </span>
-          <span className="hidden text-sm font-medium text-ink md:inline">Madhur Rastogi</span>
-          <ChevronDown className="size-4 text-muted-foreground" />
-        </Link>
+          <Bell className="size-4" />
+        </HeaderIconLink>
+        <HeaderIconLink href="/exams" label="AI Teacher's Toolkit">
+          <Sparkles className="size-4 text-coral" />
+        </HeaderIconLink>
+        <UserChip />
       </div>
     </header>
-  );
-}
-
-function IconButton({
-  children,
-  label,
-  dot,
-}: {
-  children: React.ReactNode;
-  label: string;
-  dot?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      className={cn(
-        "relative inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-ink",
-      )}
-    >
-      {children}
-      {dot && (
-        <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-coral" />
-      )}
-    </button>
   );
 }
