@@ -106,12 +106,14 @@ export type AssessmentResult = {
 };
 
 export type ProcessAssessmentInput = {
+  forceDemo?: boolean;
   questionPaper: {
     name: string;
     type: string;
     size: number;
     pageCount: number;
     pages?: DocumentPage[];
+    printedText?: string;
   };
   answerSheet: {
     name: string;
