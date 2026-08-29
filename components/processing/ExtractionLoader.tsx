@@ -15,7 +15,7 @@ export function ExtractionLoader({ stage, error, onRetry, onBack }: Props) {
   if (error) {
     return (
       <section className="flex flex-1 items-center justify-center rounded-[28px] bg-white px-6 shadow-[0_12px_40px_rgba(40,30,20,0.04)]">
-        <div className="max-w-md text-center">
+        <div className="max-w-lg text-center">
           <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-coral-soft text-coral">
             <Sparkles className="size-7" />
           </div>
