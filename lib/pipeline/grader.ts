@@ -1,4 +1,4 @@
-import type { Evaluation, Mapping, Question } from "@/lib/types";
+import type { Answer, Evaluation, Mapping, Question } from "@/lib/types";
 
 export function unansweredEvaluation(question: Question): Evaluation {
   return {
@@ -66,4 +66,38 @@ export function applyRubricLookup(
   }
 
   return evaluations;
+}
+
+export function heuristicLookup(
+  questions: Question[],
+  mappings: Mapping[],
+  answers: Answer[],
+): Record<string, { score: number; feedback: string }> {
+  const byId = new Map(answers.map((answer) => [answer.id, answer]));
+  const lookup: Record<string, { score: number; feedback: string }> = {};
+
+  for (const mapping of mappings) {
+    if (!mapping.questionId) continue;
+    if (mapping.status === "unanswered" || mapping.status === "unmatched") continue;
+    const question = questions.find((item) => item.id === mapping.questionId);
+    const answer = mapping.answerId ? byId.get(mapping.answerId) : undefined;
+    if (!question || !answer) continue;
+
+    const words = answer.text.trim().split(/\s+/).filter(Boolean).length;
+    if (words < 4) {
+      lookup[question.id] = {
+        score: 0,
+        feedback: "Very short response. Review this before awarding marks.",
+      };
+      continue;
+    }
+
+    lookup[question.id] = {
+      score: Math.min(question.maxMarks, Math.max(1, Math.round(question.maxMarks * 0.5))),
+      feedback:
+        "Conservative estimate — model grading was skipped to save API credit. Please review this mark.",
+    };
+  }
+
+  return lookup;
 }

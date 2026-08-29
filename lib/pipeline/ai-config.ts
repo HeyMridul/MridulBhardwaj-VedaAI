@@ -27,21 +27,115 @@ export function isLiveAiConfigured(): boolean {
   return Boolean(getAiConfig().apiKey);
 }
 
-export function friendlyAiError(status: number, detail: string): string {
-  const text = toText(detail).toLowerCase();
+export type AiFailureKind = "auth" | "quota" | "rate_limit" | "model" | "image" | "other";
+
+export type ClassifiedAiError = {
+  kind: AiFailureKind;
+  retryable: boolean;
+  message: string;
+};
+
+function parseProviderError(detail: string): { code: string; message: string } {
+  try {
+    const parsed = JSON.parse(detail) as {
+      error?: { code?: string; type?: string; message?: string };
+    };
+    return {
+      code: toText(parsed.error?.code || parsed.error?.type).toLowerCase(),
+      message: toText(parsed.error?.message),
+    };
+  } catch {
+    return { code: "", message: "" };
+  }
+}
+
+export function classifyAiHttpError(status: number, detail: string): ClassifiedAiError {
+  const parsed = parseProviderError(detail);
+  const text = `${detail} ${parsed.message} ${parsed.code}`.toLowerCase();
+
   if (status === 401 || text.includes("invalid_api_key") || text.includes("incorrect api key")) {
-    return "OpenAI rejected the API key. Check AI_API_KEY in .env.local (no quotes) and restart npm run dev.";
+    return {
+      kind: "auth",
+      retryable: false,
+      message:
+        "The AI provider rejected the API key. Check AI_API_KEY in .env.local (no quotes) and restart npm run dev.",
+    };
   }
-  if (status === 429 || text.includes("insufficient_quota") || text.includes("quota")) {
-    return "OpenAI quota or rate limit was hit. Check billing at platform.openai.com, then try again.";
+
+  if (
+    parsed.code === "insufficient_quota" ||
+    text.includes("insufficient_quota") ||
+    text.includes("exceeded your current quota") ||
+    (status === 429 && text.includes("billing"))
+  ) {
+    return {
+      kind: "quota",
+      retryable: false,
+      message:
+        "This OpenAI key has no remaining credit. Add billing at platform.openai.com, or switch to a Gemini key in Settings.",
+    };
   }
-  if (status === 404 || text.includes("model")) {
-    return "That model is not available on this key. Set AI_MODEL=gpt-4o-mini and restart the server.";
+
+  if (status === 429 || parsed.code === "rate_limit_exceeded" || text.includes("rate limit")) {
+    return {
+      kind: "rate_limit",
+      retryable: true,
+      message:
+        "The AI provider is rate-limiting requests. Wait a few seconds and try again, or switch to Gemini in Settings.",
+    };
   }
+
+  if (status === 404 || (status === 400 && text.includes("model"))) {
+    return {
+      kind: "model",
+      retryable: false,
+      message:
+        "That model is not available on this key. For OpenAI use gpt-4o-mini; for Gemini use gemini-2.0-flash.",
+    };
+  }
+
   if (status === 400 && text.includes("image")) {
-    return "OpenAI could not read one of the page images. Try a clearer PDF or a JPG/PNG scan.";
+    return {
+      kind: "image",
+      retryable: false,
+      message: "The model could not read one of the page images. Try a clearer PDF or a JPG/PNG scan.",
+    };
   }
-  return "The AI provider could not process these pages. Check the key, model, and that DEMO_MODE=false.";
+
+  return {
+    kind: "other",
+    retryable: false,
+    message: "The AI provider could not process these pages. Check the key, model, and that DEMO_MODE=false.",
+  };
+}
+
+export function friendlyAiError(status: number, detail: string): string {
+  return classifyAiHttpError(status, detail).message;
+}
+
+export function isQuotaError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : toText(error);
+  return /no remaining credit|insufficient_quota|exceeded your current quota/i.test(message);
+}
+
+export function isRateLimitError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : toText(error);
+  return /rate-limiting|rate limit/i.test(message);
+}
+
+export function retryAfterMs(response: Response, detail: string, attempt: number): number {
+  const header = response.headers.get("retry-after");
+  if (header) {
+    const seconds = Number(header);
+    if (Number.isFinite(seconds) && seconds > 0) {
+      return Math.min(20_000, Math.max(1_000, seconds * 1000));
+    }
+  }
+  const match = detail.match(/try again in (\d+(?:\.\d+)?)\s*s/i);
+  if (match?.[1]) {
+    return Math.min(20_000, Math.max(1_000, Number(match[1]) * 1000));
+  }
+  return Math.min(12_000, 1_500 * 2 ** attempt);
 }
 
 export function friendlyProcessingError(error: unknown): string {

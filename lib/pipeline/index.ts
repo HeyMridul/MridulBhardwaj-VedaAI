@@ -30,6 +30,10 @@ export async function processAssessment(
       };
     }
 
+    if (Boolean((input as ProcessAssessmentInput & { forceDemo?: boolean }).forceDemo)) {
+      return { ok: true, result: runDemoPipeline(input) };
+    }
+
     const mode = getPipelineMode();
     if (mode === "live" && !getAiConfig().apiKey) {
       return {
@@ -53,10 +57,16 @@ export async function processAssessment(
 
     return { ok: true, result };
   } catch (error) {
+    const message = friendlyProcessingError(error);
+    const code = /no remaining credit|insufficient_quota|quota/i.test(message)
+      ? "ai-quota"
+      : /rate-limiting|rate limit/i.test(message)
+        ? "ai-rate-limit"
+        : "processing-failed";
     return {
       ok: false,
-      code: "processing-failed",
-      error: friendlyProcessingError(error),
+      code,
+      error: message,
     };
   }
 }

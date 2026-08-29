@@ -1,7 +1,7 @@
 "use client";
 
 import { DEMO_STAGE_SEQUENCE } from "@/lib/demo/dataset";
-import { renderDocumentPages } from "@/lib/pdf";
+import { extractDocumentText, renderDocumentPages } from "@/lib/pdf";
 import type { ProcessAssessmentInput, ProcessAssessmentResponse } from "@/lib/types";
 
 export type PipelineConfig = {
@@ -15,6 +15,25 @@ export async function fetchPipelineConfig(): Promise<PipelineConfig> {
     return { mode: "demo", provider: "demo" };
   }
   return (await response.json()) as PipelineConfig;
+}
+
+export async function processDemoReview(): Promise<ProcessAssessmentResponse> {
+  const response = await fetch("/api/process", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      forceDemo: true,
+      questionPaper: { name: "demo.pdf", type: "application/pdf", size: 1, pageCount: 1 },
+      answerSheet: { name: "demo.pdf", type: "application/pdf", size: 1, pageCount: 1 },
+    } satisfies ProcessAssessmentInput),
+  });
+  const payload = (await response.json().catch(() => null)) as ProcessAssessmentResponse | null;
+  if (payload && "ok" in payload) return payload;
+  return {
+    ok: false,
+    code: "http-error",
+    error: "We couldn't load the sample review. Please try again.",
+  };
 }
 
 export async function waitForDemoStages(
@@ -54,7 +73,12 @@ export async function processAssessmentClient(args: {
 
     if (config.mode === "live") {
       args.onStage("reading-questions");
-      input.questionPaper.pages = await renderDocumentPages(args.questionPaper);
+      const [questionPages, printedText] = await Promise.all([
+        renderDocumentPages(args.questionPaper),
+        extractDocumentText(args.questionPaper),
+      ]);
+      input.questionPaper.pages = questionPages;
+      input.questionPaper.printedText = printedText;
       args.onStage("reading-answers");
       input.answerSheet.pages = await renderDocumentPages(args.answerSheet);
     } else {
