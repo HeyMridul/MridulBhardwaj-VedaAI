@@ -95,4 +95,4 @@ Live site: [https://mridulbhardwaj-vedaai.vercel.app/exams](https://mridulbhardw
 
 Source: [https://github.com/HeyMridul/MridulBhardwaj-VedaAI](https://github.com/HeyMridul/MridulBhardwaj-VedaAI)
 
-This is a standard Next.js app on Vercel. For a reviewer-safe demo, set `DEMO_MODE=true`. For live extraction of uploaded files, also set `AI_API_KEY` (and optional `AI_PROVIDER` / `AI_MODEL` / `AI_BASE_URL`) in the Vercel project — not in the client.
+This is a standard Next.js app on Vercel. For a reviewer-safe demo, set `DEMO_MODE=true`. For live extraction of uploaded files, also set `AI_API_KEY` (and optional `AI_PROVIDER` / `AI_MODEL` / `AI_BASE_URL`) in the Vercel project - not in the client.
