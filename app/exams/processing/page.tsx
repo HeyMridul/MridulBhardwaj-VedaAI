@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { ExtractionLoader } from "@/components/processing/ExtractionLoader";
 import { useAssessmentStore } from "@/lib/assessment-store";
-import { processAssessmentClient } from "@/lib/pipeline/client";
+import { processAssessmentClient, processDemoReview } from "@/lib/pipeline/client";
 import { friendlyProcessingError } from "@/lib/pipeline/ai-config";
 import type { ProcessingStage } from "@/lib/types";
 
@@ -90,6 +90,23 @@ export default function ProcessingPage() {
       });
   }
 
+  function openSample() {
+    setProcessingError(null);
+    setStage("preparing");
+    void processDemoReview()
+      .then((response) => {
+        if (!response.ok) {
+          setProcessingError(response.error);
+          return;
+        }
+        setResult(response.result);
+        router.replace("/exams/review");
+      })
+      .catch((error: unknown) => {
+        setProcessingError(friendlyProcessingError(error));
+      });
+  }
+
   return (
     <AppShell>
       <ExtractionLoader
@@ -97,6 +114,7 @@ export default function ProcessingPage() {
         error={processingError}
         onBack={() => router.push("/exams")}
         onRetry={retry}
+        onOpenSample={openSample}
       />
     </AppShell>
   );
