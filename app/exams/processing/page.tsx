@@ -6,6 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ExtractionLoader } from "@/components/processing/ExtractionLoader";
 import { useAssessmentStore } from "@/lib/assessment-store";
 import { processAssessmentClient } from "@/lib/pipeline/client";
+import { friendlyProcessingError } from "@/lib/pipeline/ai-config";
 import type { ProcessingStage } from "@/lib/types";
 
 export default function ProcessingPage() {
@@ -29,22 +30,27 @@ export default function ProcessingPage() {
     async function run() {
       setProcessingError(null);
       setStage("uploading");
-      const response = await processAssessmentClient({
-        questionPaper: questionPaper!.file,
-        answerSheet: answerSheet!.file,
-        questionPageCount: questionPaper!.pageCount ?? 1,
-        answerPageCount: answerSheet!.pageCount ?? 1,
-        onStage: (next) => {
-          if (!cancelled) setStage(next as ProcessingStage);
-        },
-      });
-      if (cancelled) return;
-      if (!response.ok) {
-        setProcessingError(response.error);
-        return;
+      try {
+        const response = await processAssessmentClient({
+          questionPaper: questionPaper!.file,
+          answerSheet: answerSheet!.file,
+          questionPageCount: questionPaper!.pageCount ?? 1,
+          answerPageCount: answerSheet!.pageCount ?? 1,
+          onStage: (next) => {
+            if (!cancelled) setStage(next as ProcessingStage);
+          },
+        });
+        if (cancelled) return;
+        if (!response.ok) {
+          setProcessingError(response.error);
+          return;
+        }
+        setResult(response.result);
+        router.replace("/exams/review");
+      } catch (error) {
+        if (cancelled) return;
+        setProcessingError(friendlyProcessingError(error));
       }
-      setResult(response.result);
-      router.replace("/exams/review");
     }
 
     void run();
@@ -70,14 +76,18 @@ export default function ProcessingPage() {
       questionPageCount: questionPaper.pageCount ?? 1,
       answerPageCount: answerSheet.pageCount ?? 1,
       onStage: (next) => setStage(next as ProcessingStage),
-    }).then((response) => {
-      if (!response.ok) {
-        setProcessingError(response.error);
-        return;
-      }
-      setResult(response.result);
-      router.replace("/exams/review");
-    });
+    })
+      .then((response) => {
+        if (!response.ok) {
+          setProcessingError(response.error);
+          return;
+        }
+        setResult(response.result);
+        router.replace("/exams/review");
+      })
+      .catch((error: unknown) => {
+        setProcessingError(friendlyProcessingError(error));
+      });
   }
 
   return (

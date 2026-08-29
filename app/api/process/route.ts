@@ -1,7 +1,8 @@
 import { processAssessment } from "@/lib/pipeline";
 import type { ProcessAssessmentInput } from "@/lib/types";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   let body: ProcessAssessmentInput;
@@ -19,5 +20,5 @@ export async function POST(request: Request) {
   }
 
   const result = await processAssessment(body);
-  return Response.json(result, { status: result.ok ? 200 : 422 });
+  return Response.json(result);
 }
