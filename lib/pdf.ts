@@ -2,13 +2,13 @@
 
 import type { DocumentPage } from "@/lib/types";
 
-const PDF_WORKER = "/pdf.worker.min.mjs";
-const MAX_RENDER_WIDTH = 1280;
-const JPEG_QUALITY = 0.72;
+const MAX_RENDER_WIDTH = 900;
+const JPEG_QUALITY = 0.55;
+const MAX_PAGES = 6;
 
 async function loadPdfjs() {
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER;
+  pdfjs.GlobalWorkerOptions.workerSrc = "/api/pdf-worker";
   return pdfjs;
 }
 
@@ -45,7 +45,8 @@ export async function renderDocumentPages(file: File): Promise<DocumentPage[]> {
   const document = await pdfjs.getDocument({ data }).promise;
   const pages: DocumentPage[] = [];
 
-  for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+  const pageTotal = Math.min(document.numPages, MAX_PAGES);
+  for (let pageNumber = 1; pageNumber <= pageTotal; pageNumber += 1) {
     const page = await document.getPage(pageNumber);
     const unscaled = page.getViewport({ scale: 1 });
     const scale = Math.min(2, MAX_RENDER_WIDTH / unscaled.width);
