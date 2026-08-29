@@ -3,6 +3,7 @@ import {
   extractQuestionNumber,
   normalizeQuestionNumber,
 } from "@/lib/question-numbers";
+import { toText } from "@/lib/text";
 
 const STOP_WORDS = new Set([
   "the",
@@ -49,9 +50,9 @@ const STOP_WORDS = new Set([
 const SEMANTIC_THRESHOLD = 0.22;
 const CONTEXTUAL_THRESHOLD = 0.5;
 
-function tokenize(text: string): Set<string> {
+function tokenize(text: unknown): Set<string> {
   return new Set(
-    text
+    toText(text)
       .toLowerCase()
       .split(/[^a-z0-9]+/)
       .filter((token) => token.length > 2 && !STOP_WORDS.has(token)),
