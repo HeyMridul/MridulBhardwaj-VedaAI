@@ -1,12 +1,13 @@
 import { getPipelineMode } from "@/lib/pipeline";
-import { isLiveAiConfigured } from "@/lib/pipeline/providers/openai";
+import { getAiConfig, isLiveAiConfigured } from "@/lib/pipeline/ai-config";
 
 export async function GET() {
   const mode = getPipelineMode();
+  const { provider, model } = getAiConfig();
   return Response.json({
     mode,
-    provider: mode === "demo" ? "demo" : process.env.AI_PROVIDER || "openai",
-    model: mode === "live" ? process.env.AI_MODEL || "gpt-4o-mini" : undefined,
+    provider: mode === "demo" ? "demo" : provider,
+    model: mode === "live" ? model : undefined,
     liveConfigured: isLiveAiConfigured(),
   });
 }
