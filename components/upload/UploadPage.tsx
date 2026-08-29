@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { TeacherIllustration } from "@/components/layout/TeacherIllustration";
 import { FileUploadCard } from "@/components/upload/FileUploadCard";
 import { useAssessmentStore } from "@/lib/assessment-store";
+import { fetchPipelineConfig } from "@/lib/pipeline/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +19,15 @@ export function UploadPage() {
   const setUpload = useAssessmentStore((state) => state.setUpload);
   const clearUpload = useAssessmentStore((state) => state.clearUpload);
   const loadSampleDocuments = useAssessmentStore((state) => state.loadSampleDocuments);
+  const [liveMode, setLiveMode] = useState(false);
 
   const ready = Boolean(questionPaper && answerSheet);
+
+  useEffect(() => {
+    void fetchPipelineConfig().then((config) => {
+      setLiveMode(config.mode === "live");
+    });
+  }, []);
 
   async function handleFile(
     slot: "questionPaper" | "answerSheet",
@@ -39,6 +48,11 @@ export function UploadPage() {
         </h1>
         <p className="mt-3 text-center text-muted-foreground">
           Upload both files to get started
+        </p>
+        <p className="mt-2 rounded-full bg-[#f6f3ee] px-3 py-1 text-xs font-medium text-muted-foreground">
+          {liveMode
+            ? "Live mode — your files will be sent to OpenAI"
+            : "Demo mode — review uses the sample Biology extraction"}
         </p>
 
         <TeacherIllustration className="mt-6" />
