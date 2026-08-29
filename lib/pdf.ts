@@ -2,9 +2,9 @@
 
 import type { DocumentPage } from "@/lib/types";
 
-const MAX_RENDER_WIDTH = 900;
-const JPEG_QUALITY = 0.55;
-const MAX_PAGES = 6;
+const MAX_RENDER_WIDTH = 768;
+const JPEG_QUALITY = 0.5;
+const MAX_PAGES = 4;
 
 async function loadPdfjs() {
   const pdfjs = await import("pdfjs-dist");
@@ -68,6 +68,34 @@ export async function renderDocumentPages(file: File): Promise<DocumentPage[]> {
   }
 
   return pages;
+}
+
+export async function extractDocumentText(file: File): Promise<string> {
+  if (file.type.startsWith("image/") || /\.(png|jpe?g|webp)$/i.test(file.name)) {
+    return "";
+  }
+  if (!(file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf"))) {
+    return "";
+  }
+
+  const pdfjs = await loadPdfjs();
+  const data = await file.arrayBuffer();
+  const document = await pdfjs.getDocument({ data }).promise;
+  const parts: string[] = [];
+  const pageTotal = Math.min(document.numPages, MAX_PAGES);
+
+  for (let pageNumber = 1; pageNumber <= pageTotal; pageNumber += 1) {
+    const page = await document.getPage(pageNumber);
+    const content = await page.getTextContent();
+    const line = content.items
+      .map((item) => ("str" in item ? item.str : ""))
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (line) parts.push(line);
+  }
+
+  return parts.join("\n");
 }
 
 async function fileToJpegDataUrl(file: File): Promise<string> {
