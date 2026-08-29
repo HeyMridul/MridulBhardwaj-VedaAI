@@ -33,47 +33,64 @@ export async function processAssessmentClient(args: {
   answerPageCount: number;
   onStage: (stage: string) => void;
 }): Promise<ProcessAssessmentResponse> {
-  const config = await fetchPipelineConfig();
-  args.onStage("uploading");
+  try {
+    const config = await fetchPipelineConfig();
+    args.onStage("uploading");
 
-  const input: ProcessAssessmentInput = {
-    questionPaper: {
-      name: args.questionPaper.name,
-      type: args.questionPaper.type,
-      size: args.questionPaper.size,
-      pageCount: args.questionPageCount,
-    },
-    answerSheet: {
-      name: args.answerSheet.name,
-      type: args.answerSheet.type,
-      size: args.answerSheet.size,
-      pageCount: args.answerPageCount,
-    },
-  };
+    const input: ProcessAssessmentInput = {
+      questionPaper: {
+        name: args.questionPaper.name,
+        type: args.questionPaper.type,
+        size: args.questionPaper.size,
+        pageCount: args.questionPageCount,
+      },
+      answerSheet: {
+        name: args.answerSheet.name,
+        type: args.answerSheet.type,
+        size: args.answerSheet.size,
+        pageCount: args.answerPageCount,
+      },
+    };
 
-  if (config.mode === "live") {
-    args.onStage("reading-questions");
-    input.questionPaper.pages = await renderDocumentPages(args.questionPaper);
-    args.onStage("reading-answers");
-    input.answerSheet.pages = await renderDocumentPages(args.answerSheet);
-  } else {
-    await waitForDemoStages(args.onStage);
-  }
+    if (config.mode === "live") {
+      args.onStage("reading-questions");
+      input.questionPaper.pages = await renderDocumentPages(args.questionPaper);
+      args.onStage("reading-answers");
+      input.answerSheet.pages = await renderDocumentPages(args.answerSheet);
+    } else {
+      await waitForDemoStages(args.onStage);
+    }
 
-  args.onStage("preparing");
-  const response = await fetch("/api/process", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
+    args.onStage("preparing");
+    const response = await fetch("/api/process", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
 
-  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as
+      | ProcessAssessmentResponse
+      | null;
+
+    if (payload && "ok" in payload) {
+      return payload;
+    }
+
     return {
       ok: false,
       code: "http-error",
-      error: "We couldn't complete extraction. Please try again.",
+      error:
+        "We couldn't complete extraction. Restart the dev server after saving .env.local, then try again.",
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "We couldn't read those files. Try a smaller PDF or a PNG/JPG scan.";
+    return {
+      ok: false,
+      code: "client-error",
+      error: message,
     };
   }
-
-  return (await response.json()) as ProcessAssessmentResponse;
 }

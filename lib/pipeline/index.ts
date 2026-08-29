@@ -1,11 +1,13 @@
+import { friendlyProcessingError, getAiConfig, isLiveAiConfigured } from "@/lib/pipeline/ai-config";
 import { runDemoPipeline } from "@/lib/pipeline/providers/demo";
-import {
-  isLiveAiConfigured,
-  runLivePipeline,
-} from "@/lib/pipeline/providers/openai";
+import { runLivePipeline } from "@/lib/pipeline/providers/openai";
 import type { ProcessAssessmentInput, ProcessAssessmentResponse } from "@/lib/types";
 
 export function getPipelineMode(): "demo" | "live" {
+  const demoFlag = `${process.env.DEMO_MODE ?? ""}`.trim().toLowerCase();
+  if (demoFlag === "true" || demoFlag === "1") return "demo";
+  if (getAiConfig().apiKey) return "live";
+  if (demoFlag === "false" || demoFlag === "0") return "live";
   return isLiveAiConfigured() ? "live" : "demo";
 }
 
@@ -29,6 +31,15 @@ export async function processAssessment(
     }
 
     const mode = getPipelineMode();
+    if (mode === "live" && !getAiConfig().apiKey) {
+      return {
+        ok: false,
+        code: "missing-key",
+        error:
+          "Live mode is on but no API key was found. Put the key in AI_API_KEY in .env.local (no quotes) and restart npm run dev.",
+      };
+    }
+
     const result =
       mode === "live" ? await runLivePipeline(input) : runDemoPipeline(input);
 
@@ -42,14 +53,10 @@ export async function processAssessment(
 
     return { ok: true, result };
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "We couldn't complete extraction. Please try again.";
     return {
       ok: false,
       code: "processing-failed",
-      error: message,
+      error: friendlyProcessingError(error),
     };
   }
 }

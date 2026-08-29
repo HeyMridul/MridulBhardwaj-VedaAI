@@ -1,7 +1,9 @@
+import { friendlyAiError, getAiConfig, parseModelJson } from "@/lib/pipeline/ai-config";
 import { mapAnswers } from "@/lib/pipeline/answer-mapper";
 import { applyRubricLookup, gradeFromScore } from "@/lib/pipeline/grader";
 import { buildSummary } from "@/lib/pipeline/summary";
 import { displayQuestionNumber, normalizeQuestionNumber } from "@/lib/question-numbers";
+import { toText, trimmed } from "@/lib/text";
 import type {
   Answer,
   AssessmentResult,
@@ -11,35 +13,23 @@ import type {
   Question,
 } from "@/lib/types";
 
+export { isLiveAiConfigured } from "@/lib/pipeline/ai-config";
+
 type VisionQuestion = {
-  number: string;
-  text: string;
+  number?: string | number;
+  text?: unknown;
   maxMarks?: number;
 };
 
 type VisionAnswer = {
-  detectedQuestionNumber?: string;
-  text: string;
+  detectedQuestionNumber?: string | number;
+  text?: unknown;
   confidence?: number;
-  regions: BoundingBox[];
+  regions?: BoundingBox[];
 };
 
 function getConfig() {
-  const apiKey = process.env.AI_API_KEY;
-  const provider = process.env.AI_PROVIDER || "openai";
-  const model = process.env.AI_MODEL || "gpt-4o-mini";
-  const baseUrl = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(
-    /\/$/,
-    "",
-  );
-  return { apiKey, provider, model, baseUrl };
-}
-
-export function isLiveAiConfigured(): boolean {
-  const demoFlag = process.env.DEMO_MODE;
-  if (demoFlag === "true") return false;
-  if (demoFlag === "false") return Boolean(process.env.AI_API_KEY);
-  return Boolean(process.env.AI_API_KEY);
+  return getAiConfig();
 }
 
 async function completeJson(args: {
@@ -52,7 +42,7 @@ async function completeJson(args: {
     throw new Error("AI_API_KEY is not configured.");
   }
 
-  const imageContent = args.images.slice(0, 8).map((page) => ({
+  const imageContent = args.images.slice(0, 6).map((page) => ({
     type: "image_url" as const,
     image_url: { url: page.src },
   }));
@@ -68,7 +58,10 @@ async function completeJson(args: {
       temperature: 0.1,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: args.system },
+        {
+          role: "system",
+          content: `${args.system} Always respond with a single JSON object only.`,
+        },
         {
           role: "user",
           content: [{ type: "text", text: args.userText }, ...imageContent],
@@ -79,38 +72,48 @@ async function completeJson(args: {
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(`AI provider returned ${response.status}. ${detail.slice(0, 280)}`);
+    throw new Error(friendlyAiError(response.status, detail));
   }
 
   const payload = (await response.json()) as {
-    choices?: { message?: { content?: string } }[];
+    choices?: { message?: { content?: unknown } }[];
+    error?: { message?: string };
   };
   const content = payload.choices?.[0]?.message?.content;
-  if (!content) {
-    throw new Error("The AI provider returned an empty response.");
+  if (content == null || content === "") {
+    throw new Error(
+      payload.error?.message || "The AI provider returned an empty response.",
+    );
   }
-  return JSON.parse(content) as unknown;
+  return parseModelJson(content);
 }
 
-function asQuestions(raw: unknown): Question[] {
-  const record = raw as { questions?: VisionQuestion[] };
-  const items = Array.isArray(record.questions) ? record.questions : [];
+function listFromModel<T>(raw: unknown, key: string): T[] {
+  if (Array.isArray(raw)) return raw as T[];
+  if (raw && typeof raw === "object") {
+    const value = (raw as Record<string, unknown>)[key];
+    if (Array.isArray(value)) return value as T[];
+  }
+  return [];
+}
+
+export function asQuestions(raw: unknown): Question[] {
+  const items = listFromModel<VisionQuestion>(raw, "questions");
   return items.map((item, index) => {
-    const number = displayQuestionNumber(item.number || String(index + 1));
+    const number = displayQuestionNumber(item.number ?? index + 1);
     return {
       id: `q-${normalizeQuestionNumber(number) || index + 1}`,
       number,
       normalizedNumber: normalizeQuestionNumber(number),
-      text: item.text?.trim() || "Untitled question",
+      text: trimmed(item.text) || "Untitled question",
       maxMarks: item.maxMarks && item.maxMarks > 0 ? item.maxMarks : 2,
       order: index + 1,
     };
   });
 }
 
-function asAnswers(raw: unknown): Answer[] {
-  const record = raw as { answers?: VisionAnswer[] };
-  const items = Array.isArray(record.answers) ? record.answers : [];
+export function asAnswers(raw: unknown): Answer[] {
+  const items = listFromModel<VisionAnswer>(raw, "answers");
   return items.map((item, index) => {
     const regions = (item.regions ?? []).map((region) => ({
       page: region.page || 1,
@@ -121,8 +124,11 @@ function asAnswers(raw: unknown): Answer[] {
     }));
     return {
       id: `a-${index + 1}`,
-      detectedQuestionNumber: item.detectedQuestionNumber,
-      text: item.text?.trim() || "",
+      detectedQuestionNumber:
+        item.detectedQuestionNumber == null
+          ? undefined
+          : toText(item.detectedQuestionNumber),
+      text: trimmed(item.text),
       confidence: item.confidence ?? 0.7,
       regions,
       pages: [...new Set(regions.map((region) => region.page))],
@@ -228,7 +234,10 @@ export async function runLivePipeline(
     images: [],
   });
 
-  const grades = (gradeRaw as { grades?: { questionNumber: string; score: number; maxScore?: number; feedback?: string }[] }).grades ?? [];
+  const grades =
+    (gradeRaw as {
+      grades?: { questionNumber?: string | number; score: number; maxScore?: number; feedback?: string }[];
+    }).grades ?? [];
   const lookup: Record<string, { score: number; feedback: string }> = {};
   for (const grade of grades) {
     const question = questions.find(
@@ -236,8 +245,8 @@ export async function runLivePipeline(
     );
     if (!question) continue;
     lookup[question.id] = {
-      score: Math.max(0, Math.min(question.maxMarks, grade.score)),
-      feedback: grade.feedback || "Reviewed by AI-assisted evaluation.",
+      score: Math.max(0, Math.min(question.maxMarks, Number(grade.score) || 0)),
+      feedback: toText(grade.feedback) || "Reviewed by AI-assisted evaluation.",
     };
   }
 
