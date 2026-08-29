@@ -8,10 +8,10 @@ Teacher-facing assessment tool: upload a printed question paper and a handwritte
 
 | Item | Detail |
 | --- | --- |
-| **Live deployed URL** | *Add your Vercel URL here after you publish (example: `https://vedaai.vercel.app`).* Until then, run locally at [http://127.0.0.1:43123](http://127.0.0.1:43123). |
-| **GitHub repository** | [https://github.com/mridul-bhardwaj/veda-assess](https://github.com/mridul-bhardwaj/veda-assess) |
+| **Live deployed URL** | [https://mridulbhardwaj-vedaai.vercel.app/exams](https://mridulbhardwaj-vedaai.vercel.app/exams) |
+| **GitHub repository** | [https://github.com/HeyMridul/MridulBhardwaj-VedaAI](https://github.com/HeyMridul/MridulBhardwaj-VedaAI) |
 | **AI model / API** | OpenAI-compatible Chat Completions **vision** API. Default: **`gpt-4o-mini`** via `https://api.openai.com/v1`. Swap-in: **Gemini** (`gemini-2.0-flash`) through Google’s OpenAI-compatible endpoint. The key is server-side only (`AI_API_KEY`). |
-| **How to review** | Open the live URL → **Load sample documents** → **Start Mapping**. Demo mode needs no API key and walks through a Class 10 Biology script. |
+| **How to review** | Open [the live app](https://mridulbhardwaj-vedaai.vercel.app/exams) → **Load sample documents** → **Start Mapping**. Demo mode needs no API key and walks through a Class 10 Biology script. |
 
 ### Approach (brief)
 
@@ -89,11 +89,10 @@ See `.env.example`. Copy it to `.env.local`; do not commit `.env.local`.
 | `AI_MODEL` | Default `gpt-4o-mini`. |
 | `AI_BASE_URL` | OpenAI-compatible base URL. |
 
-## Deploy (live URL)
+## Deploy
 
-This is a standard Next.js app (Vercel-ready).
+Live site: [https://mridulbhardwaj-vedaai.vercel.app/exams](https://mridulbhardwaj-vedaai.vercel.app/exams)
 
-1. Push this repo to GitHub (make it public, or grant the company access).
-2. Import the project in Vercel (or use the Publish control in Cursor).
-3. For a reviewer-safe demo, set `DEMO_MODE=true`. For live extraction of uploaded files, also set `AI_API_KEY` (and optional `AI_PROVIDER` / `AI_MODEL` / `AI_BASE_URL`) in the Vercel project — not in the client.
-4. Paste the production URL into the **Live deployed URL** row at the top of this README before you submit.
+Source: [https://github.com/HeyMridul/MridulBhardwaj-VedaAI](https://github.com/HeyMridul/MridulBhardwaj-VedaAI)
+
+This is a standard Next.js app on Vercel. For a reviewer-safe demo, set `DEMO_MODE=true`. For live extraction of uploaded files, also set `AI_API_KEY` (and optional `AI_PROVIDER` / `AI_MODEL` / `AI_BASE_URL`) in the Vercel project — not in the client.
