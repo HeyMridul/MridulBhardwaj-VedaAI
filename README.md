@@ -49,7 +49,7 @@ Routes: `/exams` (upload) → `/exams/processing` → `/exams/review`.
 
 ### Limitations
 
-- Demo mode always reviews the bundled Biology mapping, even if other files were uploaded (the banner says so).
+- Demo mode always reviews the bundled Biology mapping, even if other files were uploaded.
 - Live quality depends on scan clarity, page count (first four pages), and remaining provider credit. Empty OpenAI quota cannot be worked around in code.
 - Vision boxes can be approximate; unmatched / unanswered rows are kept instead of guessing.
 - Session state is in-memory in the tab (Zustand). Refreshing drops the current review.
